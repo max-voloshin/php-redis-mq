@@ -1,0 +1,21 @@
+{
+    "name": "max-voloshin/php-redis-mq",
+    "description": "PHP implementation of message queues client for Redis",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Max Voloshin",
+            "email": "voloshin.dp@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "beberlei/assert": "~2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MaxVoloshin\\PHPRedisMQ\\": "src/",
+            "MaxVoloshin\\PHPRedisMQ\\Tests\\": "tests/"
+        }
+    }
+}
