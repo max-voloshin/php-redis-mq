@@ -21,7 +21,7 @@ class ProducerTest extends \PHPUnit_Framework_TestCase
 
         $client = $this->getMock('\MaxVoloshin\PHPRedisMQ\Client');
 
-        $client->expects($this->atLeastOnce())
+        $client->expects($this->once())
             ->method('lpush')
             ->with($channelName, array($messageContent))
             ->will($this->returnValue(1));

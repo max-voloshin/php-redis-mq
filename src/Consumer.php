@@ -82,6 +82,10 @@ class Consumer
 
         $this->client->rpop($this->getWorkingChannelName());
 
+        if (0 === $this->client->srem($this->channel->getName(), array($this->getWorkingChannelName()))) {
+            throw new \RuntimeException("Unknown working channel name '{$this->getWorkingChannelName()}");
+        }
+
         $this->ackExpected = false;
     }
 
@@ -98,6 +102,9 @@ class Consumer
 
         if ($this->timeout === null) {
             if ($this->reliably) {
+                if (0 === $this->client->sadd($this->channel->getName(), array($this->getWorkingChannelName()))) {
+                    throw new \RuntimeException("Not unique working channel name '{$this->getWorkingChannelName()}'");
+                }
                 $content = $this->client->rpoplpush(
                     $this->channel->getName(),
                     $this->getWorkingChannelName()

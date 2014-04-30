@@ -7,6 +7,21 @@ namespace MaxVoloshin\PHPRedisMQ;
 interface Client
 {
     /**
+     * @link http://redis.io/commands/srem
+     * @param string $key
+     * @param string[] $members
+     * @return integer
+     */
+    public function srem($key, array $members);
+
+    /**
+     * @link http://redis.io/commands/sadd
+     * @param string $key
+     * @param string[] $members
+     * @return integer
+     */
+    public function sadd($key, array $members);
+    /**
      * @link http://redis.io/commands/lpush
      * @param string $key
      * @param string[] $values

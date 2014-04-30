@@ -81,7 +81,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpoplpush')
             ->with(
                 $this->channelName,
@@ -108,7 +108,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpoplpush')
             ->with(
                 $this->channelName,
@@ -123,18 +123,47 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $this->consumer->consume();
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Not unique working channel name
+     */
+    public function testControlUniquenessOfWorkingChannelOnConsume()
+    {
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(0));
+
+        $this->consumer->reliably();
+
+        $this->consumer->consume();
+    }
+
     public function testReliablyConsume()
     {
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpoplpush')
             ->with(
                 $this->channelName,
                 $this->consumer->getWorkingChannelName()
             )
             ->will($this->returnValue($content));
+
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
 
         $this->consumer->reliably();
 
@@ -154,7 +183,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpoplpush')
             ->with(
                 $this->channelName,
@@ -163,16 +192,57 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($content));
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpop')
             ->with($this->consumer->getWorkingChannelName());
+
+        $this->client
+            ->expects($this->once())
+            ->method('srem')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
 
         $this->consumer->reliably();
 
         $this->consumer->consume();
 
         $this->consumer->ack();
+    }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Unknown working channel name
+     */
+    public function testControlUniquenessOfWorkingChannelOnAck()
+    {
+        $content = 'Message';
+
+        $this->client
+            ->expects($this->once())
+            ->method('rpoplpush')
+            ->with(
+                $this->channelName,
+                $this->consumer->getWorkingChannelName()
+            )
+            ->will($this->returnValue($content));
+
+        $this->client
+            ->expects($this->once())
+            ->method('srem')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(0));
+
+        $this->consumer->reliably();
+
+        $this->consumer->consume();
+
+        $this->consumer->ack();
     }
 
     public function testReliablyConsumeWithWait()
@@ -182,7 +252,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('brpoplpush')
             ->with(
                 $this->channelName,
@@ -209,7 +279,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     public function testConsumeEmptyChannel()
     {
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpop')
             ->with($this->channelName)
             ->will($this->returnValue(null));
@@ -223,7 +293,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('rpop')
             ->with($this->channelName)
             ->will($this->returnValue($content));
@@ -248,7 +318,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $timeout = 1000;
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('brpop')
             ->with($this->channelName, $timeout)
             ->will($this->returnValue($content));
@@ -273,7 +343,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
         $content = 'Message';
 
         $this->client
-            ->expects($this->atLeastOnce())
+            ->expects($this->once())
             ->method('brpop')
             ->with($this->channelName, 0)
             ->will($this->returnValue($content));
