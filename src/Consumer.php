@@ -90,6 +90,10 @@ class Consumer
      */
     public function consume()
     {
+        if ($this->ackExpected) {
+            throw new \LogicException('Unable to consume message without ack to previous message');
+        }
+
         $message = null;
 
         if ($this->timeout === null) {

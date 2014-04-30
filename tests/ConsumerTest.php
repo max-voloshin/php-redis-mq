@@ -99,6 +99,30 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Unable to consume message without ack to previous message
+     */
+    public function testExtraConsume()
+    {
+        $content = 'Message';
+
+        $this->client
+            ->expects($this->atLeastOnce())
+            ->method('rpoplpush')
+            ->with(
+                $this->channelName,
+                $this->consumer->getWorkingChannelName()
+            )
+            ->will($this->returnValue($content));
+
+        $this->consumer->reliably();
+
+        $this->consumer->consume();
+
+        $this->consumer->consume();
+    }
+
     public function testReliablyConsume()
     {
         $content = 'Message';
