@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/max-voloshin/php-redis-mq.svg?branch=master)](https://travis-ci.org/max-voloshin/php-redis-mq)
+
 php-redis-mq
 ============
 
