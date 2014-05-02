@@ -6,8 +6,6 @@ php-redis-mq
 
 PHP implementation of message queues client for Redis
 
-**Library is under development!**
-
 TODO
 ====
 
