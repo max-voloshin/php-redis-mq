@@ -26,7 +26,7 @@ class ProducerTest extends \PHPUnit_Framework_TestCase
             ->with($channelName, array($messageContent))
             ->will($this->returnValue(1));
 
-        $producer = new Producer($client, $channel);
+        $producer = new Producer(new StrictClient($client), $channel);
         $producer->produce($message);
     }
 }

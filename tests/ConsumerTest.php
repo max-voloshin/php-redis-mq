@@ -65,6 +65,15 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAckWithoutMessage()
     {
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
+
         $this->consumer->reliably();
 
         $this->consumer->consume();
@@ -78,6 +87,24 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
      */
     public function testExtraAck()
     {
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
+
+        $this->client
+            ->expects($this->once())
+            ->method('srem')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
+
         $content = 'Message';
 
         $this->client
@@ -106,6 +133,15 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     public function testExtraConsume()
     {
         $content = 'Message';
+
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
 
         $this->client
             ->expects($this->once())
@@ -198,6 +234,15 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
 
         $this->client
             ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
+
+        $this->client
+            ->expects($this->once())
             ->method('srem')
             ->with(
                 $this->channelName,
@@ -219,6 +264,15 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     public function testControlUniquenessOfWorkingChannelOnAck()
     {
         $content = 'Message';
+
+        $this->client
+            ->expects($this->once())
+            ->method('sadd')
+            ->with(
+                $this->channelName,
+                array($this->consumer->getWorkingChannelName())
+            )
+            ->will($this->returnValue(1));
 
         $this->client
             ->expects($this->once())
@@ -387,6 +441,6 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     {
         $this->channel = new Channel($this->channelName);
         $this->client = $this->getMock('\MaxVoloshin\PHPRedisMQ\Client');
-        $this->consumer = new Consumer($this->client, $this->channel);
+        $this->consumer = new Consumer(new StrictClient($this->client), $this->channel);
     }
 }
