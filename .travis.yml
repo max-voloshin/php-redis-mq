@@ -13,4 +13,4 @@ before_script:
 
 script:
   - phpunit --coverage-clover=coverage.clover
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - if grep -q '5.5' < <(php --version) ; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover ; else echo "skip coverage upload" ; fi
